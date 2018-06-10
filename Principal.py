@@ -2,7 +2,7 @@ import Conexao
 import os
 from time import sleep
 import sys
-from prettytable import PrettyTable
+# from prettytable import PrettyTable
 from prettytable import from_db_cursor
 
 
@@ -108,7 +108,7 @@ def func_menu_cadastra_equipamento():
 
     if menu1 == '2':
         limpa_tela()
-        construcao()
+        alter_equip()
 
     if menu1 == '3':
         limpa_tela()
@@ -438,8 +438,103 @@ def func_cadastro_ram():
 # 1.2 - FUNÇÃO PARA ALTERAR EQUIPAMENTO CADASTRADO
 
 
-def func_alt_equip():
-    construcao()
+def alter_equip():
+    while True:
+        # SOLICITA QUE O USUÁRIO DIGITE A TAG DO NOVO EQUIPAMENTO.
+        print("==" * 18)
+        altag = str(input("Digite a TAG que deseja alterar: \n"))
+        limpa_tela()
+
+        # VERIFICA SE O USUÁRIO DIGITOU A TAG VAZIA OU NÃO DIGITOU NADA E PRESSIONOU ENTER.
+        if altag == '':
+            print("==" * 18)
+            print("Por favor digite a TAG do equipamento")
+
+        # VERIFICA SE A TAG DIGITADA CONTÉM OBRIGATORIAMENTE 7 CARACTERES.
+        elif len(altag) < 7 or len(altag) > 7:
+            print("==" * 18)
+            print("A TAG {} é invalida".format(altag))
+
+        # VERIFICA SE A TAG DIGITADA CONTÉM APENAS LETRAS OU APENAS NÚMEROS.
+        elif altag.isalpha() or altag.isdigit():
+            print("==" * 18)
+            print("A TAG {} é invalida".format(altag))
+
+        # VERIFICA SE A TAG DIGITADA POSSUI ESPAÇOS.
+        elif ' ' in altag:
+            print("==" * 18)
+            print("A TAG {} é invalida".format(altag))
+
+        elif altag in func_consulta_tag():
+            c = Conexao.cnx
+            cursor = c.cursor()
+            cursor.execute("SELECT * FROM pc WHERE TAG = %s", (altag,))
+            resultado = from_db_cursor(cursor)
+            print(resultado)
+
+            alterar = str(input("O que você deseja alterar ?\n"
+                            "\n"
+                            "1) TAG\n"
+                            "2) HOSTNAME\n"
+                            "3) MODELO\n"
+                            "4) PROCESSADOR\n"
+                            "5) TIPO DE COMPUTADOR\n"
+                            "6) SISTEMA OPERACIONAL\n"
+                            "7) MEMÓRIA RAM\n"))
+
+            if alterar != '1' and alterar != '2' and alterar != '3' and alterar != '4' and alterar != '5' \
+                    and alterar != '6' and alterar != '7':
+                print("==" * 18)
+                print("Por favor escolha uma opção válida.")
+
+            else:
+                if alterar == '1':
+                    while True:
+                       # tag = str(input("Digite a nova TAG:\n"))
+
+
+                        # SOLICITA QUE O USUÁRIO DIGITE A TAG DO NOVO EQUIPAMENTO.
+                        print("==" * 18)
+                        tag = str(input("Digite a nova TAG do equipamento:\n")).strip().upper()
+                        limpa_tela()
+
+                        # VERIFICA SE O USUÁRIO DIGITOU A TAG VAZIA OU NÃO DIGITOU NADA E PRESSIONOU ENTER.
+                        if tag == '':
+                            print("==" * 18)
+                            print("Por favor digite a TAG do equipamento")
+
+                        # VERIFICA SE A TAG DIGITADA JÁ EXISTE NO BANCO DE DADOS.
+                        elif tag in func_consulta_tag():
+                            print("==" * 18)
+                            print("A TAG {} já existe, tente novamente!".format(tag))
+
+                        # VERIFICA SE A TAG DIGITADA CONTÉM OBRIGATORIAMENTE 8 CARACTERES.
+                        elif len(tag) < 7 or len(tag) > 7:
+                            print("==" * 18)
+                            print("A TAG {} é invalida".format(tag))
+
+                        # VERIFICA SE A TAG DIGITADA CONTÉM APENAS LETRAS OU APENAS NÚMEROS.
+                        elif tag.isalpha() or tag.isdigit():
+                            print("==" * 18)
+                            print("A TAG {} é invalida".format(tag))
+
+                        # VERIFICA SE A TAG DIGITADA POSSUI ESPAÇOS.
+                        elif ' ' in tag:
+                            print("==" * 18)
+                            print("A TAG {} é invalida".format(tag))
+
+                        # CASO A TAG DIGITADA PELO O USUÁRIO NÃO SE ENCAIXE EM NENHUMA CONDIÇÃO ACIMA,
+                        # ELA SERÁ CADASTRADA NO BANCO DE DADOS.
+                        else:
+                            c = Conexao.cnx
+                            cursor = c.cursor()
+                            cursor.execute("UPDATE pc SET TAG = %s WHERE TAG = %s", (tag,altag,))
+                            cursor.fetchone()
+                            c.commit()
+                            print("==" * 18)
+                            print("A nova TAG {} foi cadastrada com sucesso!".format(tag))
+                            break
+
 
 # 1.3 - FUNÇÃO PARA REMOVER EQUIPAMENTO CADASTRADO
 
