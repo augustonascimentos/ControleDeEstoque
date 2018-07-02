@@ -489,10 +489,7 @@ def alter_equip():
 
             else:
                 if alterar == '1':
-                    while True:
-                       # tag = str(input("Digite a nova TAG:\n"))
-
-
+                    while True:             
                         # SOLICITA QUE O USUÁRIO DIGITE A TAG DO NOVO EQUIPAMENTO.
                         print("==" * 18)
                         tag = str(input("Digite a nova TAG do equipamento:\n")).strip().upper()
